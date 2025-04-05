@@ -1,0 +1,22 @@
+- name: Install and Configure Nginx (Amazon Linux 2)
+  hosts: web_servers
+  become: yes
+
+  tasks:
+    - name: Enable the nginx1 repository using amazon-linux-extras
+      raw: sudo amazon-linux-extras enable nginx1
+
+    - name: Install Nginx using raw command
+      raw: sudo yum install -y nginx
+
+    - name: Start and Enable Nginx
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Create a simple HTML page
+      copy:
+        content: "<h1>Welcome to Doris's Nginx server!</h1>"
+        dest: /usr/share/nginx/html/index.html
+        mode: '0644'

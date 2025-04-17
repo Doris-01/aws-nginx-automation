@@ -20,6 +20,19 @@ resource "aws_instance" "nginx_server" {
     subnet_id = var.public_subnet_id
     vpc_security_group_ids = [var.security_group_id]
     associate_public_ip_address = true
+
+    user_data = <<-EOF
+              #!/bin/bash
+              yum update -y
+              amazon-linux-extras enable python3.8
+              yum clean metadata
+              yum install -y python38 python38-pip
+              ln -sf /usr/bin/python3.8 /usr/bin/python3
+              ln -sf /usr/bin/pip3.8 /usr/bin/pip3
+              pip3 install ansible
+              EOF
+
+
     tags = {
         Name = "${var.ec2_instance}"
     }

@@ -17,15 +17,22 @@ module "compute" {
   public_subnet_id = module.vpc.public_subnet_id
   security_group_id = module.vpc.security_group_id
 }
-#create a route 53 hosted zone
-resource "aws_route53_zone" "internal" {
-  name = var.route53_zone_name
-  }
+# #create a route 53 hosted zone
+# resource "aws_route53_zone" "public" {
+#   name = var.route53_zone_name
+#   }
+
+# #create a route 53 hosted zone
+data "aws_route53_zone" "main" {
+  name         = "tunechi.sa.com."
+  private_zone = false
+  
+}
 
 # create a route 53 A record
 resource "aws_route53_record" "nginx_record" {
-  zone_id = aws_route53_zone.internal.zone_id
-  name    = var.nginx_record_name
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = "www"
   type    = "A"
   ttl     = 300
   records = [module.compute.server_instance_public_ip]

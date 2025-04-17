@@ -91,16 +91,4 @@ resource "aws_route_table_association" "public_route_table_association" {
     route_table_id = aws_route_table.public_route_table.id
 }
 
-# #create a route 53 hosted zone
-# resource "aws_route53_zone" "internal" {
-#   name = var.route53_zone_name
-#   }
 
-# # create a route 53 A record
-# resource "aws_route53_record" "nginx_record" {
-#   zone_id = aws_route53_zone.internal.zone_id
-#   name    = var.nginx_record_name
-#   type    = "A"
-#   ttl     = 300
-#   records = [aws_instance.nginx_server.public_ip]
-# }

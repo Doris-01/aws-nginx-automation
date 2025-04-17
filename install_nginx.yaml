@@ -1,15 +1,16 @@
-- name: Install and Configure Nginx (Amazon Linux 2)
+---
+- name: Install and Configure Nginx with Let's Encrypt SSL (Amazon Linux 2)
   hosts: web_servers
   become: yes
 
   tasks:
-    - name: Enable the nginx1 repository using amazon-linux-extras
-      raw: sudo amazon-linux-extras enable nginx1
+    - name: Enable the nginx1 repository
+      raw: amazon-linux-extras enable nginx1
 
-    - name: Install Nginx using raw command
-      raw: sudo yum install -y nginx
+    - name: Install Nginx
+      raw: yum install -y nginx
 
-    - name: Start and Enable Nginx
+    - name: Start and enable Nginx
       systemd:
         name: nginx
         state: started
@@ -20,3 +21,60 @@
         content: "<h1>Welcome to Doris's Nginx server!</h1>"
         dest: /usr/share/nginx/html/index.html
         mode: '0644'
+
+    - name: Install dependencies for pip and Certbot
+      raw: |
+        yum install -y python3-pip
+        python3 -m pip install --upgrade pip
+
+    - name: Install Certbot using pip
+      raw: python3 -m pip install certbot
+
+    - name: Obtain SSL certificate using webroot plugin
+      command: >
+        certbot certonly
+        --webroot
+        -w /usr/share/nginx/html
+        -d www.tunechi.sa.com
+        --non-interactive
+        --agree-tos
+        --email delorezdoris@gmail.com
+
+    - name: Configure Nginx to use SSL certificate
+      copy:
+        dest: /etc/nginx/conf.d/ssl.conf
+        content: |
+          server {
+              listen 443 ssl;
+              server_name www.tunechi.sa.com;
+
+              ssl_certificate /etc/letsencrypt/live/www.tunechi.sa.com/fullchain.pem;
+              ssl_certificate_key /etc/letsencrypt/live/www.tunechi.sa.com/privkey.pem;
+
+              root /usr/share/nginx/html;
+              index index.html;
+
+              location / {
+                  try_files $uri $uri/ =404;
+              }
+          }
+
+          server {
+              listen 80;
+              server_name www.tunechi.sa.com;
+              return 301 https://$host$request_uri;
+          }
+      notify: Reload Nginx
+
+    - name: Set up auto renewal for Certbot
+      cron:
+        name: Renew Let's Encrypt certificates
+        job: "/usr/local/bin/certbot renew --quiet --webroot -w /usr/share/nginx/html"
+        minute: "0"
+        hour: "3"
+
+  handlers:
+    - name: Reload Nginx
+      systemd:
+        name: nginx
+        state: reloaded

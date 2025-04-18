@@ -18,12 +18,12 @@ variable "ec2_instance" {
 variable "ssh_public_key" {
     description = "SSH public key for EC2 instance"
     type        = string
-    default = "~/.ssh/id_rsa.pub" # replace with your public key path
+    default = "~/.ssh/id_rsa.pub" 
 }
 
 variable "ssh_private_key" {
     description = "SSH private key for EC2 instance"
     type        = string
-    default = "~/.ssh/id_rsa" # replace with your private key path
+    default = "~/.ssh/id_rsa" 
   
 }

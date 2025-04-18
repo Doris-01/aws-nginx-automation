@@ -36,9 +36,7 @@ resource "aws_security_group" "nginx_sg" {
         to_port     = 22
         protocol    = "tcp"
         cidr_blocks = [var.my_ip]
-        # replace with your public IP address
-        # or use a variable to pass the IP address
-        # e.g. cidr_blocks = [var.my_ip]
+        
   
     }
     ingress {

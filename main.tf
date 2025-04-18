@@ -9,11 +9,11 @@ module "vpc" {
 
 module "compute" {
   source         = "./Modules/compute"
-  # instance_type  = "t2.micro" # Removed as it's not supported by the module
-  # instance_count = 1 # Removed as it's not supported by the module
+  # instance_type  = "t2.micro" 
+  # instance_count = 1 
   key_name       = "your-key-name"
   vpc_id         = module.vpc.vpc_id
-  # subnet_id      = module.vpc.public_subnet_id # Removed as it's not supported by the module
+  # subnet_id      = module.vpc.public_subnet_id 
   public_subnet_id = module.vpc.public_subnet_id
   security_group_id = module.vpc.security_group_id
 }

@@ -23,11 +23,20 @@ aws-nginx-automation/ ├── ansible/ │ ├── inventory.ini # Target EC
 
 - **VPC Module**
   - Custom VPC, Public Subnet, Internet Gateway
+  - 
   - Security Group allowing ports **22 (SSH)**, **80 (HTTP)**, and **443 (HTTPS)**
 
 - **Compute Module**
   - Amazon Linux 2 EC2 instance (t2.micro)
   - Public IP assigned, SSH key pair added
+
+---
+## ⚠️ Important Notes Before You Deploy
+
+- You **must have an existing Route 53 Hosted Zone** for your domain (e.g., `tunechi.sa.com`) already set up in AWS.
+- In the Terraform code, the **Route 53 hosted zone name is defined as a variable**, but:
+  > 📌 **Be sure to change `var.route53_zone_name` to match your domain name and hosted zone.**
+- The Ansible playbook also uses this domain name to request an SSL certificate from Let's Encrypt. Update the variable accordingly to avoid hard-coded errors.
 
 ---
 
